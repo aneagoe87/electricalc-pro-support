@@ -28,23 +28,27 @@
 
   <div class="card">
     <p style="margin:0"><span class="pill">In short</span></p>
-    <p style="margin-bottom:0">Electrical Pro Toolkit collects no personal data. There are no
-    accounts, no analytics, no advertising and no tracking of any kind. Your
-    calculations never leave your device. The only information ever sent off the
-    device is a pair of coordinates, only when you personally tap Calculate Yield in
-    the Solar Estimator.</p>
+    <p style="margin-bottom:0">No accounts, no analytics, no advertising and no
+    tracking of any kind. Your calculations never leave your device. The only
+    personal data processed is the approximate coordinate pair you choose to send
+    to the PVGIS service when you tap Calculate Yield in the Solar Estimator. This
+    app does not store or log it.</p>
   </div>
 
   <h2>What is stored on your device</h2>
-  <p>One thing: your chosen language, so the app opens in it next time. It stays on
-  your device and is removed when you delete the app.</p>
+  <p>Two preferences, both stored locally and removed when you delete the app:
+  your chosen language, and your chosen electrical standard (which also selects
+  metric or imperial units). Neither leaves the device.</p>
   <p>Calculator inputs and results are held in memory while a screen is open and are
   not written to storage or transmitted anywhere.</p>
 
   <h2>Location</h2>
   <p>The Solar Estimator has a <strong>Use Current GPS Location</strong> button. If you
-  tap it, the app asks for permission to read your location while the app is in use,
-  and fills the latitude and longitude fields with the result.</p>
+  tap it, the app asks for permission to read your <em>approximate</em> location while
+  the app is in use, and fills the latitude and longitude fields with the result. The
+  app requests reduced accuracy and rounds to two decimal places — about 1 km —
+  because the PVGIS dataset resolves to roughly 4 km and finer precision would serve
+  no purpose.</p>
   <ul>
     <li>Location is read only when you tap that button. Never in the background.</li>
     <li>It is used only to populate those two fields, which you can also type by hand.</li>
@@ -58,9 +62,11 @@
   <strong>PVGIS</strong>, the Photovoltaic Geographical Information System operated by
   the European Commission's Joint Research Centre, and displays the estimate it
   returns.</p>
-  <p>That request carries no identifier, no device information and nothing about you —
-  only those four numbers. It is the only outbound request the app makes. PVGIS
-  handles it under the European Commission's own privacy terms:
+  <p>The app attaches no identifier, no account and no device information to that
+  request — only those four numbers. Like any HTTPS request it necessarily carries
+  your IP address and a user agent to the receiving server, and what PVGIS does
+  with that is governed by the European Commission's own terms, not by this app.
+  It is the only outbound request the app makes. See:
   <a href="https://ec.europa.eu/info/privacy-policy_en">ec.europa.eu/info/privacy-policy_en</a>.</p>
   <p>If you never open the Solar Estimator, the app makes no network requests at all.</p>
 
@@ -72,7 +78,7 @@
     <tr><th>Advertising</th><td>None. No ad networks, no ad identifier.</td></tr>
     <tr><th>Tracking</th><td>None, as App Tracking Transparency defines it. Nothing is shared with data brokers or used to build a profile.</td></tr>
     <tr><th>Contacts, photos, camera, microphone</th><td>Never requested.</td></tr>
-    <tr><th>Selling data</th><td>There is no data to sell.</td></tr>
+    <tr><th>Selling data</th><td>Never. Your coordinates are sent to PVGIS to compute a result and are not sold, shared for advertising, or retained by this app.</td></tr>
   </table>
   </div>
 
@@ -82,9 +88,11 @@
 
   <h2>Your rights</h2>
   <p>Under the GDPR and similar laws you have rights to access, correct and erase
-  personal data held about you. No personal data about you is collected or held, so
-  there is nothing to retrieve or erase on request. Deleting the app removes the
-  single stored language preference.</p>
+  personal data held about you. This app holds no personal data about you: nothing
+  is stored server-side, there are no accounts, and the coordinates you send to
+  PVGIS are not retained by the app. Deleting the app removes the stored language
+  and standard preferences. For anything PVGIS itself retains, contact the European
+  Commission using the link above.</p>
 
   <h2>Changes</h2>
   <p>If this policy changes, the updated version will be posted here with a new date.
