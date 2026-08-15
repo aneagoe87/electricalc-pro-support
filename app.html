@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Twelve electrical calculators for electricians and solar installers. Sizes cable against thermal capacity and voltage drop, not just one. IEC and NEC, four languages, iOS.">
+<meta property="og:title" content="Electrical Pro Toolkit">
+<meta property="og:description" content="A cable has two limits. Most tools check one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://aneagoe87.github.io/electricalc-pro-support/app.html">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+<title>Electrical Pro Toolkit</title>
+<style>
+  /* Dark-first: :root carries the dark palette, light is the redefinition. */
+  :root {
+    --ground:    #0C1210;
+    --surface:   #131B18;
+    --surface-2: #1A2420;
+    --rule:      #26332D;
+    --text:      #E8EDE9;
+    --muted:     #93A29A;
+    --faint:     #6B7A72;
+
+    --copper:    #C87740;
+    --copper-lo: #8E4F26;
+    --line:      #5B8AF0;
+    --earth:     #7FBB39;
+    --warn:      #E0A93D;
+
+    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.9);
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --display: "Helvetica Neue Condensed", "HelveticaNeue-CondensedBold",
+               "Arial Narrow", "Avenir Next Condensed", system-ui, sans-serif;
+  }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --ground:    #F2F4F1;
+      --surface:   #FFFFFF;
+      --surface-2: #E9EDE8;
+      --rule:      #D2DAD4;
+      --text:      #131B18;
+      --muted:     #55635C;
+      --faint:     #7C8A82;
+      --copper:    #9B551F;
+      --copper-lo: #C87740;
+      --line:      #2C55C4;
+      --earth:     #4C7A16;
+      --warn:      #9A6C09;
+      --shadow: 0 1px 0 rgba(255,255,255,.6), 0 14px 32px -22px rgba(20,30,25,.45);
+    }
+  }
+  :root[data-theme="light"] {
+    --ground:#F2F4F1; --surface:#FFFFFF; --surface-2:#E9EDE8; --rule:#D2DAD4;
+    --text:#131B18; --muted:#55635C; --faint:#7C8A82;
+    --copper:#9B551F; --copper-lo:#C87740; --line:#2C55C4; --earth:#4C7A16; --warn:#9A6C09;
+    --shadow: 0 1px 0 rgba(255,255,255,.6), 0 14px 32px -22px rgba(20,30,25,.45);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: var(--body);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+
+  /* ---- drawing title block ---------------------------------------- */
+  .titleblock {
+    border-bottom: 1px solid var(--rule);
+    background: var(--surface);
+  }
+  .tb-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px 40px;
+    align-items: end;
+    padding: 34px 0 22px;
+  }
+  .mark {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(38px, 6.4vw, 68px);
+    line-height: .94;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .mark em { font-style: normal; color: var(--copper); }
+  .tb-meta {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    gap: 4px 26px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--faint);
+  }
+  .tb-meta b { display: block; color: var(--text); font-weight: 600; font-size: 13px; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--copper);
+    margin: 0 0 10px;
+  }
+
+  /* ---- thesis ------------------------------------------------------ */
+  .thesis { padding: 64px 0 12px; }
+  .thesis h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(30px, 4.6vw, 50px);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  .figure {
+    margin: 38px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .figure canvas { display: block; width: 100%; height: auto; }
+  .figcap {
+    display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
+    border-top: 1px solid var(--rule);
+    padding: 12px 18px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+  }
+  .key { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 15px; height: 3px; border-radius: 2px; }
+
+  /* ---- spec table --------------------------------------------------- */
+  section { padding: 62px 0; border-top: 1px solid var(--rule); margin-top: 62px; }
+  h3 {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(24px, 3.2vw, 34px); letter-spacing: -0.01em;
+    margin: 0 0 6px;
+  }
+  .sub { color: var(--muted); margin: 0 0 26px; max-width: 60ch; }
+
+  .scroll { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 620px; }
+  caption { text-align: left; font-family: var(--mono); font-size: 11px;
+            letter-spacing: .14em; text-transform: uppercase; color: var(--faint);
+            padding-bottom: 10px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  thead th {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
+    text-transform: uppercase; color: var(--faint); font-weight: 600;
+    border-bottom: 1px solid var(--rule);
+  }
+  tbody tr:hover { background: var(--surface-2); }
+  td.tool { font-weight: 600; white-space: nowrap; }
+  td.basis { font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+             font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+  /* ---- notes -------------------------------------------------------- */
+  .notes { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
+  .note {
+    background: var(--surface); border: 1px solid var(--rule);
+    border-left: 3px solid var(--copper);
+    border-radius: 3px; padding: 20px 22px;
+  }
+  .note.earth { border-left-color: var(--earth); }
+  .note.warn  { border-left-color: var(--warn); }
+  .note h4 { margin: 0 0 8px; font-size: 15px; }
+  .note p { margin: 0; color: var(--muted); font-size: 14.5px; }
+
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px;
+           background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+  .stat { background: var(--surface); padding: 20px 22px; }
+  .stat b { display: block; font-family: var(--mono); font-size: 30px; font-weight: 600;
+            font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--copper); }
+  .stat span { font-size: 13px; color: var(--muted); }
+
+  footer { border-top: 1px solid var(--rule); padding: 34px 0 60px; color: var(--faint); font-size: 13.5px; }
+  footer a { color: var(--muted); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  footer a:hover { color: var(--copper); }
+  footer nav { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+  a:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+</head>
+<body>
+<header class="titleblock">
+  <div class="wrap tb-grid">
+    <div>
+      <p class="eyebrow">Field calculators · iOS</p>
+      <h1 class="mark">Electrical<br>Pro <em>Toolkit</em></h1>
+    </div>
+    <div class="tb-meta">
+      <div><b>1.0</b>version</div>
+      <div><b>12</b>calculators</div>
+      <div><b>4</b>languages</div>
+      <div><b>IEC</b>60364</div>
+      <div><b>NEC</b>NFPA&nbsp;70</div>
+      <div><b>254</b>unit tests</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="thesis">
+    <h2>A cable has two limits. Most tools check one.</h2>
+    <p class="lede">
+      A conductor has to carry its current without overheating, <strong>and</strong> hold the
+      voltage drop within target over the run. These are independent limits, and which one
+      governs flips depending on the job. Size against either alone and you will be wrong
+      half the time — in the direction that matters.
+    </p>
+
+    <figure class="figure">
+      <canvas id="chart" width="1040" height="420" role="img"
+        aria-label="Chart of required conductor size against run length. A flat thermal limit governs on short runs; a rising voltage-drop limit governs beyond the crossover at roughly 34 metres."></canvas>
+      <figcaption class="figcap">
+        <span class="key"><span class="swatch" style="background:var(--warn)"></span>Thermal capacity</span>
+        <span class="key"><span class="swatch" style="background:var(--line)"></span>Voltage drop, 3% target</span>
+        <span class="key"><span class="swatch" style="background:var(--copper)"></span>What you must install</span>
+        <span>32 A · 230 V · 1-phase · copper · PVC</span>
+      </figcaption>
+    </figure>
+  </div>
+
+  <section>
+    <h3>Twelve calculators</h3>
+    <p class="sub">Each states the method it uses and the assumptions behind it, on screen, next to the number.</p>
+    <div class="scroll">
+      <table>
+        <caption>Tools and their basis</caption>
+        <thead>
+          <tr><th scope="col">Calculator</th><th scope="col">What it works out</th><th scope="col">Basis</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="tool">Voltage Drop</td><td>Drop across a run, 1-phase, 3-phase and DC</td><td class="basis">IEC 60364</td></tr>
+          <tr><td class="tool">Cable Ampacity</td><td>Capacity after ambient, grouping and install method</td><td class="basis">60364-5-52 · 310.16</td></tr>
+          <tr><td class="tool">Motor Sizing</td><td>Full load amps, breaker, synchronous speed</td><td class="basis">NEC 430</td></tr>
+          <tr><td class="tool">Short Circuit</td><td>Fault current at a transformer secondary</td><td class="basis">Infinite bus</td></tr>
+          <tr><td class="tool">Conduit Fill</td><td>Conductors per conduit, measured ID or trade size</td><td class="basis">Ch. 9 T1 · T4</td></tr>
+          <tr><td class="tool">Earth Conductor</td><td>Protective conductor, and EGC by device rating</td><td class="basis">60364-5-54 · 250.122</td></tr>
+          <tr><td class="tool">Power Factor</td><td>Capacitor bank in kVAr, and in µF at your frequency</td><td class="basis">Q = P(tanφ₁−tanφ₂)</td></tr>
+          <tr><td class="tool">Lighting</td><td>Fixture count for a target illuminance</td><td class="basis">Lumen method</td></tr>
+          <tr><td class="tool">PV String Sizing</td><td>Modules per string inside the inverter window</td><td class="basis">IEC 62548</td></tr>
+          <tr><td class="tool">Solar Yield</td><td>Monthly and annual production at your coordinates</td><td class="basis">PVGIS v5.2</td></tr>
+          <tr><td class="tool">Battery Bank</td><td>Off-grid capacity from load, autonomy and DoD</td><td class="basis">Ah = Wh ⁄ V</td></tr>
+          <tr><td class="tool">Ohm's Law</td><td>V, I, R and P from any two</td><td class="basis">V = IR</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h3>Built for both sides of the Atlantic</h3>
+    <p class="sub">One setting switches the whole app, not just the labels.</p>
+    <div class="stats">
+      <div class="stat"><b>mm² / AWG</b><span>Conductor sizing, with kcmil</span></div>
+      <div class="stat"><b>50 / 60 Hz</b><span>Feeds motor speed and capacitance</span></div>
+      <div class="stat"><b>°C / °F</b><span>Derating, ambient, cell temps</span></div>
+      <div class="stat"><b>m / ft</b><span>Runs, rooms, illuminance in lx or fc</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h3>What it will tell you that it doesn't know</h3>
+    <p class="sub">A calculator that hides its assumptions is harder to trust than one that shows them.</p>
+    <div class="notes">
+      <div class="note">
+        <h4>It refuses rather than guesses</h4>
+        <p>When no standard size can carry the load, or none meets the drop target, it says so
+        and shows nothing. A missing constraint never renders as a satisfied one.</p>
+      </div>
+      <div class="note earth">
+        <h4>DC has no assumed voltage</h4>
+        <p>A 12 V bank and a 600 V string are both DC. Rather than pick one, it leaves the
+        percentage blank until you enter the actual bus voltage.</p>
+      </div>
+      <div class="note warn">
+        <h4>Reference tables are labelled as such</h4>
+        <p>Built-in ampacities are convenience values, checked against published sources and
+        marked where those sources disagree. You can override any of them with the rating
+        from your own cable.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <nav>
+      <a href="https://aneagoe87.github.io/electricalc-pro-support/">Support</a>
+      <a href="https://aneagoe87.github.io/electricalc-pro-support/privacy.html">Privacy</a>
+      <a href="https://aneagoe87.github.io/electricalc-pro-support/terms.html">Terms</a>
+    </nav>
+    <p style="margin:0 0 8px">
+      Results are estimates for planning. Verify every one against the applicable standard,
+      the manufacturer's data and your local authority before installing.
+    </p>
+    <p style="margin:0">
+      Independent app — not affiliated with, endorsed by or approved by the IEC, the NFPA,
+      or the European Commission. NEC® and NFPA 70® are registered marks of the NFPA.
+    </p>
+  </footer>
+</main>
+
+<script>
+  (function () {
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+
+    // 32 A, 230 V single-phase, copper, PVC, 3% target.
+    // Thermal: fixed by current and install conditions, so flat in length.
+    // Drop: area rises linearly with run length.
+    const THERMAL_MM2 = 6;
+    const IEC = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95];
+    const MAX_L = 90;
+    const dropArea = (L) => (2 * L * 32 * 0.9) / (44.8 * 0.03 * 230); // κ at 70 °C PVC
+    const stepUp = (a) => IEC.find((s) => s >= a) ?? IEC[IEC.length - 1];
+
+    function token(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    function draw() {
+      const dpr = window.devicePixelRatio || 1;
+      const cssW = canvas.clientWidth || 1040;
+      const cssH = Math.round(cssW * 0.404);
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
+      canvas.style.height = cssH + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, cssW, cssH);
+
+      const c = {
+        rule: token('--rule'), faint: token('--faint'), muted: token('--muted'),
+        copper: token('--copper'), line: token('--line'), warn: token('--warn'),
+        text: token('--text'), surface: token('--surface'),
+      };
+
+      const L = 62, R = 22, T = 26, B = 42;
+      const w = cssW - L - R, h = cssH - T - B;
+      const yTop = 25; // mm²
+      const x = (m) => L + (m / MAX_L) * w;
+      const y = (mm2) => T + h - (mm2 / yTop) * h;
+
+      ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.textBaseline = 'middle';
+
+      // grid + y labels
+      IEC.filter((s) => s <= yTop).forEach((s) => {
+        ctx.strokeStyle = c.rule; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(L, y(s) + .5); ctx.lineTo(L + w, y(s) + .5); ctx.stroke();
+        ctx.fillStyle = c.faint; ctx.textAlign = 'right';
+        ctx.fillText(s + '', L - 10, y(s));
+      });
+      ctx.textAlign = 'center';
+      for (let m = 0; m <= MAX_L; m += 15) {
+        ctx.fillStyle = c.faint;
+        ctx.fillText(m + (m === MAX_L ? ' m' : ''), x(m), T + h + 18);
+      }
+
+      // governing envelope = max(thermal, drop), stepped to standard sizes
+      ctx.beginPath();
+      ctx.moveTo(x(0), y(0));
+      for (let m = 0; m <= MAX_L; m += 0.5) {
+        ctx.lineTo(x(m), y(stepUp(Math.max(THERMAL_MM2, dropArea(m)))));
+      }
+      ctx.lineTo(x(MAX_L), y(0));
+      ctx.closePath();
+      ctx.fillStyle = c.copper + '22';
+      ctx.fill();
+
+      ctx.beginPath();
+      for (let m = 0; m <= MAX_L; m += 0.5) {
+        const v = y(stepUp(Math.max(THERMAL_MM2, dropArea(m))));
+        m === 0 ? ctx.moveTo(x(m), v) : ctx.lineTo(x(m), v);
+      }
+      ctx.strokeStyle = c.copper; ctx.lineWidth = 2.5; ctx.stroke();
+
+      // thermal limit — flat
+      ctx.beginPath();
+      ctx.moveTo(x(0), y(THERMAL_MM2)); ctx.lineTo(x(MAX_L), y(THERMAL_MM2));
+      ctx.strokeStyle = c.warn; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke();
+
+      // drop requirement — rising
+      ctx.beginPath();
+      for (let m = 0; m <= MAX_L; m += 0.5) {
+        const v = y(Math.min(dropArea(m), yTop));
+        m === 0 ? ctx.moveTo(x(m), v) : ctx.lineTo(x(m), v);
+      }
+      ctx.strokeStyle = c.line; ctx.stroke();
+      ctx.setLineDash([]);
+
+      // crossover
+      let cross = 0;
+      for (let m = 0; m <= MAX_L; m += 0.1) if (dropArea(m) <= THERMAL_MM2) cross = m;
+      ctx.beginPath(); ctx.arc(x(cross), y(THERMAL_MM2), 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = c.surface; ctx.fill();
+      ctx.strokeStyle = c.copper; ctx.lineWidth = 2; ctx.stroke();
+
+      ctx.fillStyle = c.text; ctx.textAlign = 'left';
+      ctx.fillText('crossover · ' + cross.toFixed(0) + ' m', x(cross) + 10, y(THERMAL_MM2) - 14);
+      ctx.fillStyle = c.muted;
+      ctx.fillText('thermal governs', x(4), y(THERMAL_MM2) + 20);
+      ctx.textAlign = 'right';
+      ctx.fillText('voltage drop governs', x(MAX_L) - 6, y(20));
+
+      ctx.save();
+      ctx.translate(16, T + h / 2); ctx.rotate(-Math.PI / 2);
+      ctx.textAlign = 'center'; ctx.fillStyle = c.faint;
+      ctx.fillText('conductor  mm²', 0, 0);
+      ctx.restore();
+    }
+
+    draw();
+    addEventListener('resize', draw);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+    new MutationObserver(draw).observe(document.documentElement, {
+      attributes: true, attributeFilter: ['data-theme'],
+    });
+  })();
+</script>
+
+</body>
+</html>
