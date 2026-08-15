@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ElectriCalc Pro — Support</title>
+<meta name="description" content="Support and help for ElectriCalc Pro, a set of twelve electrical and solar calculators for electricians and installers.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1 class="mark">
+      <svg class="bolt" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M13.5 2 4 13.5h6L9.5 22 20 10.5h-6.5L13.5 2Z" fill="#4da3ff" stroke="#7fd4ff" stroke-width="1.1" stroke-linejoin="round"/>
+      </svg>
+      ElectriCalc Pro
+    </h1>
+    <p>Support &amp; help</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="card">
+    <p style="margin-top:0"><strong>Need help, found a bug, or want a calculator added?</strong></p>
+    <p class="muted">The fastest way to reach me is email. I read every message.</p>
+    <p style="margin-bottom:0">
+      <a class="cta" href="mailto:andrei.costin.neagoe@gmail.com?subject=ElectriCalc%20Pro%20support">Email support</a>
+    </p>
+  </div>
+
+  <p class="muted">
+    Please include your device model, iOS version, the app version (Settings → About),
+    and the numbers you entered. For a calculation that looks wrong, the inputs matter
+    most — that is usually enough to reproduce it straight away.
+  </p>
+
+  <h2>What the app does</h2>
+  <p>ElectriCalc Pro is a set of twelve calculators for electricians, solar installers and engineers.</p>
+
+  <div class="scroll">
+  <table>
+    <tr><th>Tool</th><th>What it works out</th></tr>
+    <tr><td>Voltage Drop &amp; Cable Sizing</td><td>Drop across a run for 1-phase, 3-phase and DC</td></tr>
+    <tr><td>Cable Ampacity &amp; Derating</td><td>Capacity after ambient, grouping, insulation and install method</td></tr>
+    <tr><td>Motor Sizing</td><td>Full load amps and inverse-time breaker size</td></tr>
+    <tr><td>Short Circuit</td><td>Fault current at a transformer secondary</td></tr>
+    <tr><td>Conduit Fill</td><td>Maximum conductors for a conduit</td></tr>
+    <tr><td>Earth Conductor</td><td>Protective conductor by table and adiabatic equation</td></tr>
+    <tr><td>Power Factor Correction</td><td>Capacitor bank size to reach a target cos φ</td></tr>
+    <tr><td>Lighting</td><td>Fixture count by the lumen method</td></tr>
+    <tr><td>PV String Sizing</td><td>Modules per string inside the inverter DC window</td></tr>
+    <tr><td>Solar Yield</td><td>Monthly and yearly production via PVGIS</td></tr>
+    <tr><td>Battery Bank</td><td>Off-grid capacity from load and autonomy</td></tr>
+    <tr><td>Ohm's Law</td><td>V, I, R and P from any two</td></tr>
+  </table>
+  </div>
+
+  <h2>Common questions</h2>
+
+  <details>
+    <summary>Why does the recommended cable differ from my usual answer?</summary>
+    <p>Because the app checks two limits, not one. A cable must both stay within the
+    voltage drop target and carry the current without overheating. Many calculators
+    only check voltage drop.</p>
+    <p>The app sizes to whichever limit governs and says which one it was, in the
+    breakdown under the result. If the thermal limit is driving it, look at your
+    ambient temperature and the number of grouped circuits — derating there is often
+    the reason.</p>
+  </details>
+
+  <details>
+    <summary>I typed 2,5 and got a strange answer</summary>
+    <p>You should not. Comma and point decimals are both accepted, so <code>2,5</code>
+    and <code>2.5</code> mean the same thing in every language. If you see otherwise,
+    please email me the exact input — that is a bug worth fixing quickly.</p>
+  </details>
+
+  <details>
+    <summary>Why is the voltage drop percentage blank on DC?</summary>
+    <p>DC has no standard nominal voltage. A 12 V battery bank and a 600 V PV string
+    are both DC, and guessing between them would change the percentage by an order of
+    magnitude. Enter the actual bus or string voltage and the percentage appears.</p>
+    <p>The drop in volts is always shown, since it does not depend on system voltage.</p>
+  </details>
+
+  <details>
+    <summary>Where do the ampacity figures come from?</summary>
+    <p>They are widely published reference values for common cable constructions,
+    following the IEC 60364-5-52 derating method. They are a convenience, not a
+    substitute for your cable's data sheet.</p>
+    <p>Always verify against the manufacturer's rating and the standard that applies
+    in your jurisdiction before installing.</p>
+  </details>
+
+  <details>
+    <summary>Does it follow IEC or NEC?</summary>
+    <p>Both, in different places. Cable sizing, ampacity and earthing follow IEC 60364
+    practice. Conduit fill and breaker selection follow NEC tables. Each screen notes
+    the basis it uses. Check that the convention matches your jurisdiction.</p>
+  </details>
+
+  <details>
+    <summary>Does it work without a signal?</summary>
+    <p>Yes, apart from one tool. Eleven of the twelve calculators run entirely on your
+    device. Only the Solar Yield estimator needs a connection, because it queries the
+    PVGIS service for irradiation data at your coordinates.</p>
+  </details>
+
+  <details>
+    <summary>The solar estimator says my coordinates are out of coverage</summary>
+    <p>PVGIS does not cover the entire globe. If it rejects your location, the
+    coordinates are likely outside its dataset. The other eleven calculators are
+    unaffected.</p>
+  </details>
+
+  <details>
+    <summary>Can you add a calculator?</summary>
+    <p>Please ask. Requests from people doing the work are the best guide to what
+    belongs in the app, and several tools exist because someone asked.</p>
+  </details>
+
+  <h2>Languages</h2>
+  <p>English, Spanish, French and German. Change it under <strong>Settings → Language</strong>.
+  If a translation reads badly to a native speaker, I would genuinely like to know.</p>
+
+  <h2>A word on accuracy</h2>
+  <div class="card">
+    <p style="margin:0">Results are estimates for planning. Verify them against the
+    applicable standard, the manufacturer's data and local regulations before
+    installing anything. The app states its assumptions on screen so you can judge
+    whether they hold for your situation.</p>
+  </div>
+
+  <footer>
+    <p>
+      <a href="privacy.html">Privacy Policy</a> ·
+      <a href="mailto:andrei.costin.neagoe@gmail.com?subject=ElectriCalc%20Pro%20support">Email support</a>
+    </p>
+    <p>ElectriCalc Pro is an independent app and is not affiliated with, endorsed by,
+    or connected to the IEC, the NFPA, or the European Commission's PVGIS service.</p>
+  </footer>
+
+</div>
+</body>
+</html>
