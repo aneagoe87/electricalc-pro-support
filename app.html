@@ -4,31 +4,35 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Twelve electrical calculators for electricians and solar installers. Sizes cable against thermal capacity and voltage drop, not just one. IEC and NEC, four languages, iOS.">
+<meta name="author" content="Andrei Neagoe">
 <meta property="og:title" content="Electrical Pro Toolkit">
 <meta property="og:description" content="A cable has two limits. Most tools check one.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://aneagoe87.github.io/electricalc-pro-support/app.html">
+<meta property="og:image" content="https://aneagoe87.github.io/electricalc-pro-support/shots/voltage-drop-result.webp">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
 <title>Electrical Pro Toolkit</title>
 <style>
-  /* Dark-first: :root carries the dark palette, light is the redefinition. */
+  /* Dark-first: :root carries the dark palette, light is the redefinition.
+     Neutrals sit in cool graphite so the app's own navy screens read as part
+     of the same family; copper is the single accent, everything else is
+     functional colour borrowed from conductor identification. */
   :root {
-    --ground:    #0C1210;
-    --surface:   #131B18;
-    --surface-2: #1A2420;
-    --rule:      #26332D;
-    --text:      #E8EDE9;
-    --muted:     #93A29A;
-    --faint:     #6B7A72;
+    --ground:    #0A0E12;
+    --surface:   #111820;
+    --surface-2: #18212B;
+    --rule:      #26313C;
+    --text:      #E7ECF1;
+    --muted:     #98A5B1;
+    --faint:     #6C7A86;
 
-    --copper:    #C87740;
-    --copper-lo: #8E4F26;
+    --copper:    #CE7C41;
     --line:      #5B8AF0;
-    --earth:     #7FBB39;
+    --earth:     #6FBB4A;
     --warn:      #E0A93D;
 
-    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 18px 40px -24px rgba(0,0,0,.9);
+    --shadow: 0 1px 0 rgba(255,255,255,.03), 0 22px 48px -28px rgba(0,0,0,.95);
     --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
     --body: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     --display: "Helvetica Neue Condensed", "HelveticaNeue-CondensedBold",
@@ -36,26 +40,25 @@
   }
   @media (prefers-color-scheme: light) {
     :root:not([data-theme="dark"]) {
-      --ground:    #F2F4F1;
+      --ground:    #F1F3F5;
       --surface:   #FFFFFF;
-      --surface-2: #E9EDE8;
-      --rule:      #D2DAD4;
-      --text:      #131B18;
-      --muted:     #55635C;
-      --faint:     #7C8A82;
-      --copper:    #9B551F;
-      --copper-lo: #C87740;
-      --line:      #2C55C4;
-      --earth:     #4C7A16;
-      --warn:      #9A6C09;
-      --shadow: 0 1px 0 rgba(255,255,255,.6), 0 14px 32px -22px rgba(20,30,25,.45);
+      --surface-2: #E7EBEF;
+      --rule:      #D3DAE1;
+      --text:      #101820;
+      --muted:     #54626E;
+      --faint:     #7B8894;
+      --copper:    #94501B;
+      --line:      #2A50BE;
+      --earth:     #4A7A22;
+      --warn:      #8E6206;
+      --shadow: 0 1px 0 rgba(255,255,255,.6), 0 18px 38px -26px rgba(16,24,32,.5);
     }
   }
   :root[data-theme="light"] {
-    --ground:#F2F4F1; --surface:#FFFFFF; --surface-2:#E9EDE8; --rule:#D2DAD4;
-    --text:#131B18; --muted:#55635C; --faint:#7C8A82;
-    --copper:#9B551F; --copper-lo:#C87740; --line:#2C55C4; --earth:#4C7A16; --warn:#9A6C09;
-    --shadow: 0 1px 0 rgba(255,255,255,.6), 0 14px 32px -22px rgba(20,30,25,.45);
+    --ground:#F1F3F5; --surface:#FFFFFF; --surface-2:#E7EBEF; --rule:#D3DAE1;
+    --text:#101820; --muted:#54626E; --faint:#7B8894;
+    --copper:#94501B; --line:#2A50BE; --earth:#4A7A22; --warn:#8E6206;
+    --shadow: 0 1px 0 rgba(255,255,255,.6), 0 18px 38px -26px rgba(16,24,32,.5);
   }
 
   * { box-sizing: border-box; }
@@ -67,138 +70,206 @@
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
   }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+  img { max-width: 100%; }
 
   /* ---- drawing title block ---------------------------------------- */
-  .titleblock {
-    border-bottom: 1px solid var(--rule);
-    background: var(--surface);
-  }
+  .titleblock { border-bottom: 1px solid var(--rule); background: var(--surface); }
   .tb-grid {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 24px 40px;
-    align-items: end;
-    padding: 34px 0 22px;
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 26px 48px; align-items: end; padding: 34px 0 24px;
   }
   .mark {
-    font-family: var(--display);
-    font-weight: 700;
+    font-family: var(--display); font-weight: 700;
     font-size: clamp(38px, 6.4vw, 68px);
-    line-height: .94;
-    letter-spacing: -0.015em;
-    margin: 0;
-    text-wrap: balance;
+    line-height: .94; letter-spacing: -0.015em; margin: 0; text-wrap: balance;
   }
   .mark em { font-style: normal; color: var(--copper); }
   .tb-meta {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    gap: 4px 26px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    font-variant-numeric: tabular-nums;
-    color: var(--faint);
+    display: grid; grid-template-columns: repeat(3, minmax(0, auto)); gap: 6px 26px;
+    font-family: var(--mono); font-size: 11px; font-variant-numeric: tabular-nums;
+    letter-spacing: .04em; text-transform: uppercase; color: var(--faint);
   }
-  .tb-meta b { display: block; color: var(--text); font-weight: 600; font-size: 13px; }
+  .tb-meta b {
+    display: block; color: var(--text); font-weight: 600;
+    font-size: 13px; letter-spacing: 0; text-transform: none;
+  }
   .eyebrow {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: var(--copper);
-    margin: 0 0 10px;
+    font-family: var(--mono); font-size: 11px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--copper); margin: 0 0 10px;
   }
 
-  /* ---- thesis ------------------------------------------------------ */
-  .thesis { padding: 64px 0 12px; }
-  .thesis h2 {
-    font-family: var(--display);
-    font-weight: 700;
-    font-size: clamp(30px, 4.6vw, 50px);
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    margin: 0 0 18px;
-    max-width: 18ch;
-    text-wrap: balance;
-  }
-  .lede { font-size: 18px; color: var(--muted); max-width: 62ch; margin: 0; }
-  .lede strong { color: var(--text); font-weight: 600; }
-
-  .figure {
-    margin: 38px 0 0;
-    background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 4px;
-    box-shadow: var(--shadow);
-    overflow: hidden;
-  }
-  .figure canvas { display: block; width: 100%; height: auto; }
-  .figcap {
-    display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: center;
-    border-top: 1px solid var(--rule);
-    padding: 12px 18px;
-    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
-  }
-  .key { display: inline-flex; align-items: center; gap: 7px; }
-  .swatch { width: 15px; height: 3px; border-radius: 2px; }
-
-  /* ---- spec table --------------------------------------------------- */
-  section { padding: 62px 0; border-top: 1px solid var(--rule); margin-top: 62px; }
+  /* ---- shared section furniture ------------------------------------ */
+  section { padding: 66px 0; border-top: 1px solid var(--rule); }
   h3 {
     font-family: var(--display); font-weight: 700;
     font-size: clamp(24px, 3.2vw, 34px); letter-spacing: -0.01em;
-    margin: 0 0 6px;
+    margin: 0 0 8px; text-wrap: balance;
   }
-  .sub { color: var(--muted); margin: 0 0 26px; max-width: 60ch; }
+  .sub { color: var(--muted); margin: 0 0 30px; max-width: 62ch; }
 
+  /* ---- thesis ------------------------------------------------------ */
+  .thesis {
+    padding: 70px 0; display: grid; gap: 46px;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); align-items: center;
+  }
+  .thesis h2 {
+    font-family: var(--display); font-weight: 700;
+    font-size: clamp(31px, 4.8vw, 54px); line-height: 1.02;
+    letter-spacing: -0.012em; margin: 0 0 20px; max-width: 17ch; text-wrap: balance;
+  }
+  .lede { font-size: 18px; color: var(--muted); max-width: 56ch; margin: 0 0 26px; }
+  .lede strong { color: var(--text); font-weight: 600; }
+
+  /* two readings pulled out of the screen beside it */
+  .readout {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px; background: var(--rule); border: 1px solid var(--rule);
+    border-radius: 3px; overflow: hidden; max-width: 460px;
+  }
+  .readout div { background: var(--surface); padding: 15px 18px; }
+  .readout span {
+    display: block; font-family: var(--mono); font-size: 10.5px;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px;
+  }
+  .readout b {
+    font-family: var(--mono); font-size: 21px; font-weight: 600;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+  }
+  .readout .t b { color: var(--warn); }
+  .readout .d b { color: var(--line); }
+
+  /* ---- device screens ---------------------------------------------- */
+  .screen {
+    display: block; background: var(--surface-2);
+    border: 1px solid var(--rule); border-radius: 16px;
+    box-shadow: var(--shadow); overflow: hidden;
+  }
+  .screen img { display: block; width: 100%; height: auto; }
+  figure { margin: 0; }
+  figcaption {
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    margin-top: 12px; line-height: 1.5;
+  }
+  .thesis .screen { max-width: 340px; margin-inline: auto; }
+
+  /* ---- method ------------------------------------------------------- */
+  .steps { display: grid; gap: 1px; background: var(--rule);
+           border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+  .step {
+    background: var(--surface); padding: 24px 26px;
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 22px;
+  }
+  .step .n {
+    grid-row: span 2; font-family: var(--mono); font-size: 13px; font-weight: 600;
+    font-variant-numeric: tabular-nums; color: var(--copper); padding-top: 3px;
+  }
+  .step h4 { margin: 0; font-size: 16.5px; }
+  .step p { margin: 6px 0 0; color: var(--muted); font-size: 15px; max-width: 68ch; }
+  .step p + p { margin-top: 10px; }
+  .step code {
+    font-family: var(--mono); font-size: 13.5px; color: var(--text);
+    background: var(--surface-2); border: 1px solid var(--rule);
+    border-radius: 3px; padding: 1px 6px; white-space: nowrap;
+  }
+
+  /* Top-aligned, not centred: a phone is far taller than three paragraphs, and
+     centring the text leaves a conspicuous void above it. */
+  .split {
+    display: grid; gap: 44px; align-items: start; margin-top: 44px;
+    grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+  }
+  .split .col-text { padding-top: 6px; }
+  .split.flip { grid-template-columns: minmax(0, 1fr) minmax(0, 340px); }
+  .split.flip .col-text { order: -1; }
+  .split h4 { font-size: 18px; margin: 0 0 8px; }
+  .split p { color: var(--muted); margin: 0 0 14px; max-width: 58ch; }
+  .split p:last-child { margin-bottom: 0; }
+
+  /* ---- screen strip -------------------------------------------------- */
+  .strip {
+    display: grid; grid-auto-flow: column; grid-auto-columns: 232px;
+    gap: 22px; overflow-x: auto; padding-bottom: 18px;
+    scroll-snap-type: x mandatory; overscroll-behavior-x: contain;
+  }
+  .strip > figure { scroll-snap-align: start; }
+  .strip figcaption { font-size: 11px; }
+  .strip::-webkit-scrollbar { height: 8px; }
+  .strip::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 4px; }
+  .hint {
+    font-family: var(--mono); font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--faint); margin: 14px 0 0;
+  }
+
+  /* ---- spec table ----------------------------------------------------- */
   .scroll { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 620px; }
-  caption { text-align: left; font-family: var(--mono); font-size: 11px;
-            letter-spacing: .14em; text-transform: uppercase; color: var(--faint);
-            padding-bottom: 10px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14.5px; min-width: 640px; }
+  caption {
+    text-align: left; font-family: var(--mono); font-size: 11px;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--faint);
+    padding-bottom: 10px;
+  }
   th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
   thead th {
     font-family: var(--mono); font-size: 10.5px; letter-spacing: .13em;
     text-transform: uppercase; color: var(--faint); font-weight: 600;
-    border-bottom: 1px solid var(--rule);
   }
   tbody tr:hover { background: var(--surface-2); }
   td.tool { font-weight: 600; white-space: nowrap; }
-  td.basis { font-family: var(--mono); font-size: 12.5px; color: var(--muted);
-             font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td.basis {
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted);
+    font-variant-numeric: tabular-nums; white-space: nowrap;
+  }
 
-  /* ---- notes -------------------------------------------------------- */
-  .notes { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(268px, 1fr)); }
+  /* ---- notes / stats --------------------------------------------------- */
+  .notes { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(272px, 1fr)); }
   .note {
     background: var(--surface); border: 1px solid var(--rule);
-    border-left: 3px solid var(--copper);
-    border-radius: 3px; padding: 20px 22px;
+    border-left: 3px solid var(--copper); border-radius: 3px; padding: 20px 22px;
   }
   .note.earth { border-left-color: var(--earth); }
   .note.warn  { border-left-color: var(--warn); }
+  .note.line  { border-left-color: var(--line); }
   .note h4 { margin: 0 0 8px; font-size: 15px; }
   .note p { margin: 0; color: var(--muted); font-size: 14.5px; }
 
-  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px;
-           background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden; }
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 1px;
+    background: var(--rule); border: 1px solid var(--rule); border-radius: 3px; overflow: hidden;
+  }
   .stat { background: var(--surface); padding: 20px 22px; }
-  .stat b { display: block; font-family: var(--mono); font-size: 30px; font-weight: 600;
-            font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--copper); }
+  .stat b {
+    display: block; font-family: var(--mono); font-size: 28px; font-weight: 600;
+    font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: var(--copper);
+  }
   .stat span { font-size: 13px; color: var(--muted); }
 
-  footer { border-top: 1px solid var(--rule); padding: 34px 0 60px; color: var(--faint); font-size: 13.5px; }
+  footer { border-top: 1px solid var(--rule); padding: 36px 0 64px; color: var(--faint); font-size: 13.5px; }
   footer a { color: var(--muted); text-decoration-thickness: 1px; text-underline-offset: 2px; }
   footer a:hover { color: var(--copper); }
-  footer nav { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+  footer nav { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 16px; }
+  footer p { margin: 0 0 8px; max-width: 78ch; }
+  footer p:last-child { margin-bottom: 0; }
+
   a:focus-visible, [tabindex]:focus-visible {
     outline: 2px solid var(--copper); outline-offset: 3px; border-radius: 2px;
   }
+
+  @media (max-width: 880px) {
+    .tb-grid { grid-template-columns: 1fr; align-items: start; }
+    /* Three mono columns do not fit a 390px viewport — they pushed the whole
+       document wider than the screen and every section scrolled sideways. */
+    .tb-meta { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 20px; }
+    .thesis { grid-template-columns: 1fr; gap: 34px; padding: 52px 0; }
+    .split, .split.flip { grid-template-columns: 1fr; gap: 28px; }
+    .split.flip .col-text { order: 0; }
+    .split .screen { max-width: 320px; }
+  }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
-
 </head>
 <body>
+
 <header class="titleblock">
   <div class="wrap tb-grid">
     <div>
@@ -206,234 +277,287 @@
       <h1 class="mark">Electrical<br>Pro <em>Toolkit</em></h1>
     </div>
     <div class="tb-meta">
-      <div><b>1.0</b>version</div>
+      <div><b>1.0.0</b>version</div>
       <div><b>12</b>calculators</div>
       <div><b>4</b>languages</div>
       <div><b>IEC</b>60364</div>
       <div><b>NEC</b>NFPA&nbsp;70</div>
       <div><b>254</b>unit tests</div>
+      <div style="grid-column: 1 / -1"><b>Andrei Neagoe</b>created by</div>
     </div>
   </div>
 </header>
 
-<main class="wrap">
+<main>
 
-  <div class="thesis">
-    <h2>A cable has two limits. Most tools check one.</h2>
-    <p class="lede">
-      A conductor has to carry its current without overheating, <strong>and</strong> hold the
-      voltage drop within target over the run. These are independent limits, and which one
-      governs flips depending on the job. Size against either alone and you will be wrong
-      half the time — in the direction that matters.
-    </p>
-
-    <figure class="figure">
-      <canvas id="chart" width="1040" height="420" role="img"
-        aria-label="Chart of required conductor size against run length. A flat thermal limit governs on short runs; a rising voltage-drop limit governs beyond the crossover at roughly 34 metres."></canvas>
-      <figcaption class="figcap">
-        <span class="key"><span class="swatch" style="background:var(--warn)"></span>Thermal capacity</span>
-        <span class="key"><span class="swatch" style="background:var(--line)"></span>Voltage drop, 3% target</span>
-        <span class="key"><span class="swatch" style="background:var(--copper)"></span>What you must install</span>
-        <span>32 A · 230 V · 1-phase · copper · PVC</span>
-      </figcaption>
+  <div class="wrap thesis">
+    <div>
+      <h2>A cable has two limits. Most tools check one.</h2>
+      <p class="lede">
+        A conductor has to carry its current without overheating, <strong>and</strong> hold the
+        voltage drop within target over the run. These are independent limits, and which one
+        governs flips depending on the job — short and heavy, thermal wins; long and light,
+        the drop wins. Size against either alone and you will be wrong half the time.
+      </p>
+      <div class="readout">
+        <div class="t"><span>Thermal capacity needs</span><b>16 mm²</b></div>
+        <div class="d"><span>Voltage drop needs</span><b>6 mm²</b></div>
+      </div>
+      <p class="hint">Both are shown. The larger one is what you install.</p>
+    </div>
+    <figure>
+      <div class="screen">
+        <img src="shots/voltage-drop-result.webp" width="880" height="1788" alt="Voltage Drop Calculator result: 6.96% estimated drop, required minimum cable 16 mm² governed by current-carrying capacity, with a breakdown reading thermal capacity needs 16 mm² and voltage drop needs 6 mm².">
+      </div>
+      <figcaption>Voltage Drop · the governing size and both constraints behind it</figcaption>
     </figure>
   </div>
 
-  <section>
-    <h3>Twelve calculators</h3>
-    <p class="sub">Each states the method it uses and the assumptions behind it, on screen, next to the number.</p>
-    <div class="scroll">
-      <table>
-        <caption>Tools and their basis</caption>
-        <thead>
-          <tr><th scope="col">Calculator</th><th scope="col">What it works out</th><th scope="col">Basis</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="tool">Voltage Drop</td><td>Drop across a run, 1-phase, 3-phase and DC</td><td class="basis">IEC 60364</td></tr>
-          <tr><td class="tool">Cable Ampacity</td><td>Capacity after ambient, grouping and install method</td><td class="basis">60364-5-52 · 310.16</td></tr>
-          <tr><td class="tool">Motor Sizing</td><td>Full load amps, breaker, synchronous speed</td><td class="basis">NEC 430</td></tr>
-          <tr><td class="tool">Short Circuit</td><td>Fault current at a transformer secondary</td><td class="basis">Infinite bus</td></tr>
-          <tr><td class="tool">Conduit Fill</td><td>Conductors per conduit, measured ID or trade size</td><td class="basis">Ch. 9 T1 · T4</td></tr>
-          <tr><td class="tool">Earth Conductor</td><td>Protective conductor, and EGC by device rating</td><td class="basis">60364-5-54 · 250.122</td></tr>
-          <tr><td class="tool">Power Factor</td><td>Capacitor bank in kVAr, and in µF at your frequency</td><td class="basis">Q = P(tanφ₁−tanφ₂)</td></tr>
-          <tr><td class="tool">Lighting</td><td>Fixture count for a target illuminance</td><td class="basis">Lumen method</td></tr>
-          <tr><td class="tool">PV String Sizing</td><td>Modules per string inside the inverter window</td><td class="basis">IEC 62548</td></tr>
-          <tr><td class="tool">Solar Yield</td><td>Monthly and annual production at your coordinates</td><td class="basis">PVGIS v5.2</td></tr>
-          <tr><td class="tool">Battery Bank</td><td>Off-grid capacity from load, autonomy and DoD</td><td class="basis">Ah = Wh ⁄ V</td></tr>
-          <tr><td class="tool">Ohm's Law</td><td>V, I, R and P from any two</td><td class="basis">V = IR</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
+  <div class="wrap">
 
-  <section>
-    <h3>Built for both sides of the Atlantic</h3>
-    <p class="sub">One setting switches the whole app, not just the labels.</p>
-    <div class="stats">
-      <div class="stat"><b>mm² / AWG</b><span>Conductor sizing, with kcmil</span></div>
-      <div class="stat"><b>50 / 60 Hz</b><span>Feeds motor speed and capacitance</span></div>
-      <div class="stat"><b>°C / °F</b><span>Derating, ambient, cell temps</span></div>
-      <div class="stat"><b>m / ft</b><span>Runs, rooms, illuminance in lx or fc</span></div>
-    </div>
-  </section>
+    <section id="method">
+      <h3>How it arrives at a size</h3>
+      <p class="sub">
+        Five steps, in this order, every time. The app shows the working next to the number
+        rather than asking you to take it on faith.
+      </p>
 
-  <section>
-    <h3>What it will tell you that it doesn't know</h3>
-    <p class="sub">A calculator that hides its assumptions is harder to trust than one that shows them.</p>
-    <div class="notes">
-      <div class="note">
-        <h4>It refuses rather than guesses</h4>
-        <p>When no standard size can carry the load, or none meets the drop target, it says so
-        and shows nothing. A missing constraint never renders as a satisfied one.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="n">01</div>
+          <h4>You describe the installation, not just the load</h4>
+          <p>
+            Insulation, installation method, ambient temperature and how many circuits are
+            bunched together. On a warm roof void with six circuits in one tray, these move the
+            answer further than the current does.
+          </p>
+        </div>
+        <div class="step">
+          <div class="n">02</div>
+          <h4>Thermal axis — tabulated capacity, then the derating</h4>
+          <p>
+            The reference capacity for that size and method is multiplied by the ambient and
+            grouping factors. Under NEC the derated result is then capped at the termination
+            rating you selected, 60 °C or 75 °C, because the limit is usually the lug and not
+            the cable — <span style="white-space:nowrap">NEC 110.14(C)</span>.
+          </p>
+        </div>
+        <div class="step">
+          <div class="n">03</div>
+          <h4>Drop axis — resistance at operating temperature</h4>
+          <p>
+            Conductor resistivity is taken at normal service temperature, as
+            IEC 60364-5-52 defines it: <code>ρ = 1.25 × ρ₂₀</code>, so copper enters the
+            calculation at <code>κ = 44.8</code> rather than the 20 °C figure of 56.
+            Computing a hot cable with cold-copper numbers understates the drop by 20%.
+          </p>
+        </div>
+        <div class="step">
+          <div class="n">04</div>
+          <h4>The governing size is the larger of the two</h4>
+          <p>
+            Each axis produces a required area independently. The result is whichever is
+            bigger, stepped up to the next real size — mm² on IEC, AWG and kcmil on NEC — and
+            labelled with which axis governed it.
+          </p>
+        </div>
+        <div class="step">
+          <div class="n">05</div>
+          <h4>If it cannot be met, it says so</h4>
+          <p>
+            When no size in the table can carry the load, or none holds the drop target, the
+            app reports that exhaustion rather than quietly returning the largest row. A
+            constraint that could not be satisfied never renders as one that was.
+          </p>
+        </div>
       </div>
-      <div class="note earth">
-        <h4>DC has no assumed voltage</h4>
-        <p>A 12 V bank and a 600 V string are both DC. Rather than pick one, it leaves the
-        percentage blank until you enter the actual bus voltage.</p>
-      </div>
-      <div class="note warn">
-        <h4>Reference tables are labelled as such</h4>
-        <p>Built-in ampacities are convenience values, checked against published sources and
-        marked where those sources disagree. You can override any of them with the rating
-        from your own cable.</p>
-      </div>
-    </div>
-  </section>
 
-  <footer>
-    <nav>
-      <a href="https://aneagoe87.github.io/electricalc-pro-support/">Support</a>
-      <a href="https://aneagoe87.github.io/electricalc-pro-support/privacy.html">Privacy</a>
-      <a href="https://aneagoe87.github.io/electricalc-pro-support/terms.html">Terms</a>
-    </nav>
-    <p style="margin:0 0 8px">
-      Results are estimates for planning. Verify every one against the applicable standard,
-      the manufacturer's data and your local authority before installing.
-    </p>
-    <p style="margin:0">
-      Independent app — not affiliated with, endorsed by or approved by the IEC, the NFPA,
-      or the European Commission. NEC® and NFPA 70® are registered marks of the NFPA.
-    </p>
-  </footer>
+      <div class="split">
+        <figure>
+          <div class="screen">
+            <img src="shots/voltage-drop-inputs.webp" width="880" height="1788" loading="lazy" alt="Voltage Drop Calculator inputs: current, cable length, conductor sizing switched between mm² and AWG, voltage with 230, 240 and 110 volt presets, copper or aluminium, 1-phase, 3-phase or DC, and a thermal conditions group with PVC or XLPE insulation and installation methods B1, B2, C and E.">
+          </div>
+          <figcaption>Voltage Drop · inputs, with the thermal conditions in the same form</figcaption>
+        </figure>
+        <div class="col-text">
+          <h4>Step 01, on screen</h4>
+          <p>
+            Conductor material, system type, insulation, installation method, ambient and
+            grouping all sit in the same form as the current and the length, because they all
+            change the answer.
+          </p>
+          <p>
+            DC is a first-class system alongside 1-phase and 3-phase, and it carries no assumed
+            nominal voltage. A 12 V bank and a 600 V string are both DC, so rather than pick one
+            the percentage stays blank until you enter the actual bus voltage.
+          </p>
+          <p>
+            Every reference capacity can be overridden with the rating printed on your own
+            cable's data sheet.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="solar">
+      <h3>Yield from your coordinates, not from a rule of thumb</h3>
+      <p class="sub">
+        The one tool that reaches the network. The other eleven run entirely on the device.
+      </p>
+      <div class="split flip">
+        <div class="col-text">
+          <h4>Solar Estimator</h4>
+          <p>
+            Enter peak power and system loss, drop a pin or use your current position, and it
+            queries <strong>PVGIS v5.2</strong> — the European Commission's irradiation
+            database — for that exact latitude and longitude.
+          </p>
+          <p>
+            You get annual production, a month-by-month breakdown you can tap for the figure
+            behind each bar, and the optimal tilt and azimuth for the site. Azimuth follows the
+            PVGIS convention where 0° is south.
+          </p>
+          <p>
+            System loss defaults to 14% and is yours to change. Nothing about your location is
+            stored or sent anywhere except to PVGIS to answer the query.
+          </p>
+        </div>
+        <figure>
+          <div class="screen">
+            <img src="shots/solar.webp" width="880" height="1788" loading="lazy" alt="Solar Estimator: 6 kWp peak power at 14% system loss returning 7639 kWh estimated yearly production, a monthly production bar chart from January to December, and optimal tilt 35 degrees with optimal azimuth 3 degrees.">
+          </div>
+          <figcaption>Solar Estimator · monthly production, tap a bar for its value</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section id="screens">
+      <h3>Twelve tools, one grammar</h3>
+      <p class="sub">
+        Same shape on every screen: inputs at the top, the result in the middle, the assumptions
+        underneath it. Nothing is hidden behind a menu.
+      </p>
+      <div class="strip" tabindex="0" role="group" aria-label="App screenshots, scrollable">
+        <figure>
+          <div class="screen">
+            <img src="shots/dashboard.webp" width="880" height="1788" loading="lazy" alt="Tools Dashboard listing Voltage Drop Calculator, Motor Sizing, Conduit Fill, Lighting, Short Circuit, Solar Estimator, Unit Converter and Ohm's Law as cards in a two-column grid.">
+          </div>
+          <figcaption>Dashboard</figcaption>
+        </figure>
+        <figure>
+          <div class="screen">
+            <img src="shots/conduit.webp" width="880" height="1788" loading="lazy" alt="Conduit Fill: measured internal diameter of 25 mm with 10.5 mm² per wire and three or more conductors, returning a maximum of 18 wires, with a note that it uses the 40 percent column of NEC Chapter 9 Table 1.">
+          </div>
+          <figcaption>Conduit Fill · states its own method</figcaption>
+        </figure>
+        <figure>
+          <div class="screen">
+            <img src="shots/battery.webp" width="880" height="1788" loading="lazy" alt="Battery Bank: 5000 Wh daily load, 3 days autonomy, 48 V bank, lithium chemistry at 0.9 depth of discharge and 0.95 efficiency, returning 365 Ah required capacity and 17.54 kWh stored energy.">
+          </div>
+          <figcaption>Battery Bank</figcaption>
+        </figure>
+        <figure>
+          <div class="screen">
+            <img src="shots/converter.webp" width="880" height="1788" loading="lazy" alt="Unit Converter set to the Power category, converting 74 kW to 99.2356 HP, with Energy, Temperature, Pressure and Length among the other categories.">
+          </div>
+          <figcaption>Unit Converter · 12 categories</figcaption>
+        </figure>
+        <figure>
+          <div class="screen">
+            <img src="shots/settings.webp" width="880" height="1788" loading="lazy" alt="Settings: electrical standard switched between IEC Europe and NEC North America, language list of English, Español, Français and Deutsch, and an about panel reading Electrical Pro Toolkit version 1.0.0.">
+          </div>
+          <figcaption>Settings · standard and language</figcaption>
+        </figure>
+      </div>
+      <p class="hint">Scroll for more →</p>
+    </section>
+
+    <section id="tools">
+      <h3>What each one works out</h3>
+      <p class="sub">Every calculator names the method it uses, on screen, next to the number.</p>
+      <div class="scroll">
+        <table>
+          <caption>Tools and their basis</caption>
+          <thead>
+            <tr><th scope="col">Calculator</th><th scope="col">What it works out</th><th scope="col">Basis</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="tool">Voltage Drop</td><td>Drop across a run, 1-phase, 3-phase and DC</td><td class="basis">IEC 60364</td></tr>
+            <tr><td class="tool">Cable Ampacity</td><td>Capacity after ambient, grouping and install method</td><td class="basis">60364-5-52 · 310.16</td></tr>
+            <tr><td class="tool">Motor Sizing</td><td>Full load amps, breaker, synchronous speed</td><td class="basis">NEC 430</td></tr>
+            <tr><td class="tool">Short Circuit</td><td>Fault current at a transformer secondary</td><td class="basis">Infinite bus</td></tr>
+            <tr><td class="tool">Conduit Fill</td><td>Conductors per conduit, measured ID or trade size</td><td class="basis">Ch. 9 T1 · T4</td></tr>
+            <tr><td class="tool">Earth Conductor</td><td>Protective conductor, and EGC by device rating</td><td class="basis">60364-5-54 · 250.122</td></tr>
+            <tr><td class="tool">Power Factor</td><td>Capacitor bank in kVAr, and in µF at your frequency</td><td class="basis">Q = P(tanφ₁−tanφ₂)</td></tr>
+            <tr><td class="tool">Lighting</td><td>Fixture count for a target illuminance</td><td class="basis">Lumen method</td></tr>
+            <tr><td class="tool">PV String Sizing</td><td>Modules per string inside the inverter window</td><td class="basis">IEC 62548</td></tr>
+            <tr><td class="tool">Solar Yield</td><td>Monthly and annual production at your coordinates</td><td class="basis">PVGIS v5.2</td></tr>
+            <tr><td class="tool">Battery Bank</td><td>Off-grid capacity from load, autonomy and DoD</td><td class="basis">Ah = Wh ⁄ V</td></tr>
+            <tr><td class="tool">Ohm's Law</td><td>V, I, R and P from any two</td><td class="basis">V = IR</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="units">
+      <h3>Built for both sides of the Atlantic</h3>
+      <p class="sub">One setting switches the whole app, not just the labels.</p>
+      <div class="stats">
+        <div class="stat"><b>mm² / AWG</b><span>Conductor sizing, with kcmil</span></div>
+        <div class="stat"><b>50 / 60 Hz</b><span>Feeds motor speed and capacitance</span></div>
+        <div class="stat"><b>°C / °F</b><span>Derating, ambient, cell temperatures</span></div>
+        <div class="stat"><b>m / ft</b><span>Runs, rooms, illuminance in lx or fc</span></div>
+      </div>
+    </section>
+
+    <section id="honesty">
+      <h3>What it will tell you that it doesn't know</h3>
+      <p class="sub">A calculator that hides its assumptions is harder to trust than one that shows them.</p>
+      <div class="notes">
+        <div class="note">
+          <h4>It refuses rather than guesses</h4>
+          <p>When no standard size can carry the load, or none meets the drop target, it says so
+          and shows nothing. A missing constraint never renders as a satisfied one.</p>
+        </div>
+        <div class="note earth">
+          <h4>DC has no assumed voltage</h4>
+          <p>A 12 V bank and a 600 V string are both DC. Rather than pick one, it leaves the
+          percentage blank until you enter the actual bus voltage.</p>
+        </div>
+        <div class="note warn">
+          <h4>Reference tables are labelled as such</h4>
+          <p>Built-in ampacities are convenience values, checked against published sources and
+          marked where those sources disagree. Any of them can be overridden with the rating
+          from your own cable.</p>
+        </div>
+        <div class="note line">
+          <h4>It works where the job is</h4>
+          <p>Eleven of the twelve run with no connection at all. No account, no sign-in, and
+          nothing you type is sent anywhere.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <nav>
+        <a href="./">Support</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./terms.html">Terms</a>
+      </nav>
+      <p>
+        Results are estimates for planning. Verify every one against the applicable standard,
+        the manufacturer's data and your local authority before installing. Not a substitute for
+        a licensed electrician.
+      </p>
+      <p>
+        Independent app — not affiliated with, endorsed by or approved by the IEC, the NFPA,
+        or the European Commission. NEC® and NFPA 70® are registered marks of the NFPA.
+      </p>
+      <p>Electrical Pro Toolkit 1.0.0 · created by Andrei Neagoe</p>
+    </footer>
+
+  </div>
 </main>
-
-<script>
-  (function () {
-    const canvas = document.getElementById('chart');
-    const ctx = canvas.getContext('2d');
-
-    // 32 A, 230 V single-phase, copper, PVC, 3% target.
-    // Thermal: fixed by current and install conditions, so flat in length.
-    // Drop: area rises linearly with run length.
-    const THERMAL_MM2 = 6;
-    const IEC = [1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70, 95];
-    const MAX_L = 90;
-    const dropArea = (L) => (2 * L * 32 * 0.9) / (44.8 * 0.03 * 230); // κ at 70 °C PVC
-    const stepUp = (a) => IEC.find((s) => s >= a) ?? IEC[IEC.length - 1];
-
-    function token(name) {
-      return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-    }
-
-    function draw() {
-      const dpr = window.devicePixelRatio || 1;
-      const cssW = canvas.clientWidth || 1040;
-      const cssH = Math.round(cssW * 0.404);
-      canvas.width = cssW * dpr;
-      canvas.height = cssH * dpr;
-      canvas.style.height = cssH + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      ctx.clearRect(0, 0, cssW, cssH);
-
-      const c = {
-        rule: token('--rule'), faint: token('--faint'), muted: token('--muted'),
-        copper: token('--copper'), line: token('--line'), warn: token('--warn'),
-        text: token('--text'), surface: token('--surface'),
-      };
-
-      const L = 62, R = 22, T = 26, B = 42;
-      const w = cssW - L - R, h = cssH - T - B;
-      const yTop = 25; // mm²
-      const x = (m) => L + (m / MAX_L) * w;
-      const y = (mm2) => T + h - (mm2 / yTop) * h;
-
-      ctx.font = '11px ui-monospace, SFMono-Regular, Menlo, monospace';
-      ctx.textBaseline = 'middle';
-
-      // grid + y labels
-      IEC.filter((s) => s <= yTop).forEach((s) => {
-        ctx.strokeStyle = c.rule; ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(L, y(s) + .5); ctx.lineTo(L + w, y(s) + .5); ctx.stroke();
-        ctx.fillStyle = c.faint; ctx.textAlign = 'right';
-        ctx.fillText(s + '', L - 10, y(s));
-      });
-      ctx.textAlign = 'center';
-      for (let m = 0; m <= MAX_L; m += 15) {
-        ctx.fillStyle = c.faint;
-        ctx.fillText(m + (m === MAX_L ? ' m' : ''), x(m), T + h + 18);
-      }
-
-      // governing envelope = max(thermal, drop), stepped to standard sizes
-      ctx.beginPath();
-      ctx.moveTo(x(0), y(0));
-      for (let m = 0; m <= MAX_L; m += 0.5) {
-        ctx.lineTo(x(m), y(stepUp(Math.max(THERMAL_MM2, dropArea(m)))));
-      }
-      ctx.lineTo(x(MAX_L), y(0));
-      ctx.closePath();
-      ctx.fillStyle = c.copper + '22';
-      ctx.fill();
-
-      ctx.beginPath();
-      for (let m = 0; m <= MAX_L; m += 0.5) {
-        const v = y(stepUp(Math.max(THERMAL_MM2, dropArea(m))));
-        m === 0 ? ctx.moveTo(x(m), v) : ctx.lineTo(x(m), v);
-      }
-      ctx.strokeStyle = c.copper; ctx.lineWidth = 2.5; ctx.stroke();
-
-      // thermal limit — flat
-      ctx.beginPath();
-      ctx.moveTo(x(0), y(THERMAL_MM2)); ctx.lineTo(x(MAX_L), y(THERMAL_MM2));
-      ctx.strokeStyle = c.warn; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]); ctx.stroke();
-
-      // drop requirement — rising
-      ctx.beginPath();
-      for (let m = 0; m <= MAX_L; m += 0.5) {
-        const v = y(Math.min(dropArea(m), yTop));
-        m === 0 ? ctx.moveTo(x(m), v) : ctx.lineTo(x(m), v);
-      }
-      ctx.strokeStyle = c.line; ctx.stroke();
-      ctx.setLineDash([]);
-
-      // crossover
-      let cross = 0;
-      for (let m = 0; m <= MAX_L; m += 0.1) if (dropArea(m) <= THERMAL_MM2) cross = m;
-      ctx.beginPath(); ctx.arc(x(cross), y(THERMAL_MM2), 4.5, 0, Math.PI * 2);
-      ctx.fillStyle = c.surface; ctx.fill();
-      ctx.strokeStyle = c.copper; ctx.lineWidth = 2; ctx.stroke();
-
-      ctx.fillStyle = c.text; ctx.textAlign = 'left';
-      ctx.fillText('crossover · ' + cross.toFixed(0) + ' m', x(cross) + 10, y(THERMAL_MM2) - 14);
-      ctx.fillStyle = c.muted;
-      ctx.fillText('thermal governs', x(4), y(THERMAL_MM2) + 20);
-      ctx.textAlign = 'right';
-      ctx.fillText('voltage drop governs', x(MAX_L) - 6, y(20));
-
-      ctx.save();
-      ctx.translate(16, T + h / 2); ctx.rotate(-Math.PI / 2);
-      ctx.textAlign = 'center'; ctx.fillStyle = c.faint;
-      ctx.fillText('conductor  mm²', 0, 0);
-      ctx.restore();
-    }
-
-    draw();
-    addEventListener('resize', draw);
-    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
-    new MutationObserver(draw).observe(document.documentElement, {
-      attributes: true, attributeFilter: ['data-theme'],
-    });
-  })();
-</script>
 
 </body>
 </html>
