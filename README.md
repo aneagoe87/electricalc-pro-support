@@ -1,4 +1,4 @@
-# ElectriCalc Pro — Support
+# Electrical Pro Toolkit — Support
 
 Twelve electrical calculators for electricians, solar installers and engineers.
 
